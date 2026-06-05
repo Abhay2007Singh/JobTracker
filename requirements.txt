@@ -1,0 +1,25 @@
+# Job Application Tracking System — Python dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Google APIs (Gmail + Sheets OAuth) ────────────────────────────────────────
+google-auth>=2.27.0
+google-auth-oauthlib>=1.2.0
+google-api-python-client>=2.120.0
+
+# ── Gemini AI ─────────────────────────────────────────────────────────────────
+# google-genai is the new SDK that supports AQ. format API keys from AI Studio
+google-genai>=1.0.0
+
+# ── Telegram bot ──────────────────────────────────────────────────────────────
+python-telegram-bot>=21.0.0
+
+# ── Database ──────────────────────────────────────────────────────────────────
+SQLAlchemy>=2.0.0
+alembic>=1.13.0
+
+# ── Scheduler ─────────────────────────────────────────────────────────────────
+APScheduler>=3.10.0
+pytz>=2024.1
+
+# ── Environment ───────────────────────────────────────────────────────────────
+python-dotenv>=1.0.0

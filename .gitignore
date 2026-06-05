@@ -1,0 +1,49 @@
+# Poll state — auto-generated, not needed in version control
+jobtracker_state.json
+
+# Secrets and credentials — NEVER commit these
+.env
+token.json
+credentials.json
+client_secret_*.json
+
+# Screenshots / docs captured during setup — personal, not part of the codebase
+*.png
+*.jpg
+*.jpeg
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.venv/
+venv/
+env/
+.env/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Alembic compiled
+alembic/versions/__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
