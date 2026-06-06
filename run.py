@@ -55,7 +55,7 @@ async def main() -> None:
     # ── 6. Wait until Ctrl+C ─────────────────────────────────────────────────
     logger.info("JobTracker is running. Press Ctrl+C to stop.")
     try:
-        await asyncio.Event().wait()          # block until cancelled
+        await asyncio.Event().wait()
     except asyncio.CancelledError:
         pass
     except KeyboardInterrupt:

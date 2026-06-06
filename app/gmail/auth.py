@@ -1,5 +1,6 @@
 # Gmail OAuth2 authentication — handles first-run browser consent and token refresh.
 
+import os
 from pathlib import Path
 
 from google.auth.transport.requests import Request
@@ -23,13 +24,43 @@ SCOPES = [
 ]
 
 
+def _ensure_credential_files() -> None:
+    """
+    On cloud deployments (Railway, Render etc.) secret files cannot be committed
+    to git. Instead, their JSON contents are stored as environment variables
+    CREDENTIALS_JSON and TOKEN_JSON. This function writes them to disk on
+    startup if the files are missing but the env vars are present.
+    """
+    creds_path = Path(config.GMAIL_CREDENTIALS_PATH)
+    token_path = Path(config.GMAIL_TOKEN_PATH)
+
+    if not creds_path.exists():
+        creds_json = os.environ.get("CREDENTIALS_JSON", "").strip()
+        if creds_json:
+            creds_path.write_text(creds_json, encoding="utf-8")
+            logger.info(f"credentials.json written from CREDENTIALS_JSON env var")
+        else:
+            logger.error("credentials.json missing and CREDENTIALS_JSON env var not set")
+
+    if not token_path.exists():
+        token_json = os.environ.get("TOKEN_JSON", "").strip()
+        if token_json:
+            token_path.write_text(token_json, encoding="utf-8")
+            logger.info(f"token.json written from TOKEN_JSON env var")
+        else:
+            logger.warning("token.json missing and TOKEN_JSON env var not set — OAuth browser flow will be attempted")
+
+
 def get_gmail_service():
     """
     Returns an authenticated Gmail API service object.
 
     First run: opens a browser window for OAuth2 consent and saves token.json.
     Subsequent runs: loads token.json and silently refreshes if expired.
+    On cloud: reads credentials from CREDENTIALS_JSON / TOKEN_JSON env vars.
     """
+    _ensure_credential_files()
+
     creds: Credentials | None = None
     token_path = Path(config.GMAIL_TOKEN_PATH)
 
