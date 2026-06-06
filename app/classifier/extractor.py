@@ -8,6 +8,7 @@ from app.classifier.types import ExtractedData
 from app.classifier.rules import classify_by_rules, RulesResult
 from app.classifier.gemini import GeminiClassifier
 from app.classifier.validator import validate_and_normalise
+from app.models.application import Platform
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -67,8 +68,20 @@ def extract(email: dict) -> Optional[ExtractedData]:
                 "description_snippet": email.get("snippet"),
             }
         else:
-            logger.warning(f"[{email_id}] Gemini failed and rules uncertain — skipping email")
-            return None
+            # Gemini failed and rules gave nothing — save with minimal data so
+            # the email isn't lost. User can review it via Telegram /pending.
+            logger.warning(f"[{email_id}] Gemini quota exhausted — saving with minimal data")
+            gemini_raw = {
+                "category":            "APPLICATION_CONFIRMATION",
+                "company":             None,
+                "role":                None,
+                "platform":            Platform.UNKNOWN.value,
+                "location":            None,
+                "salary_range":        None,
+                "job_url":             None,
+                "confidence":          0.2,
+                "description_snippet": email.get("snippet"),
+            }
 
     # ── Step 3: post-Gemini irrelevant check ──────────────────────────────────
     if gemini_raw.get("category") == "IRRELEVANT":

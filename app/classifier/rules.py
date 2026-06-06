@@ -66,6 +66,9 @@ _IRRELEVANT = [
 _CONFIRMATION = [
     r"application received",
     r"application submitted",
+    r"application successful",
+    r"successfully applied",
+    r"application complete",
     r"you (have )?applied",
     r"we received your application",
     r"thank(s| you) for (applying|your application|your interest|submitting|your submission)",

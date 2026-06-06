@@ -74,7 +74,7 @@ class GeminiClassifier:
         if elapsed < _MIN_CALL_INTERVAL:
             time.sleep(_MIN_CALL_INTERVAL - elapsed)
 
-    def _call_with_retry(self, prompt: str, max_retries: int = 3) -> Optional[str]:
+    def _call_with_retry(self, prompt: str, max_retries: int = 2) -> Optional[str]:
         for attempt in range(max_retries):
             self._throttle()
             try:
@@ -87,10 +87,14 @@ class GeminiClassifier:
             except Exception as exc:
                 err = str(exc).lower()
                 if any(kw in err for kw in ("quota", "429", "rate limit", "resource_exhausted")):
-                    # Wait long enough to escape the current 60-second quota window
-                    wait = _RATE_LIMIT_RESET * (attempt + 1)  # 65 s → 130 s → 195 s
-                    logger.warning(f"Gemini rate limit — waiting {wait:.0f}s (attempt {attempt + 1}/{max_retries})")
-                    time.sleep(wait)
+                    if attempt == 0:
+                        # First failure — wait one full minute (RPM reset) and retry once
+                        logger.warning(f"Gemini rate limit — waiting 65s (attempt 1/{max_retries})")
+                        time.sleep(65)
+                    else:
+                        # Second failure means daily quota is exhausted — stop retrying
+                        logger.warning("Gemini quota exhausted for today — skipping (will retry next poll)")
+                        return None
                 else:
                     logger.error(f"Gemini API error: {exc}")
                     return None

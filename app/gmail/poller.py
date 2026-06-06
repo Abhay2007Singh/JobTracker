@@ -31,6 +31,7 @@ _JOB_QUERY = (
     "cutshort.io OR hirist.com OR hirist.tech OR jooble.org OR jobsora.com OR nttdata.com) OR "
     'subject:("application received" OR "application submitted" OR "you applied" OR '
     '"we received your application" OR "thank you for applying" OR "your application" OR '
+    '"application successful" OR "successfully applied" OR "application complete" OR '
     '"online submission" OR "thank you for submitting" OR '
     '"interview invitation" OR "interview request" OR "job offer" OR "offer letter" OR '
     '"we regret to inform" OR "unfortunately" OR "shortlisted" OR "next steps" OR '
