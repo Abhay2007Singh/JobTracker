@@ -21,22 +21,19 @@ logger = setup_logger(__name__)
 # Stored next to run.py in the project root.
 STATE_FILE = Path("jobtracker_state.json")
 
-# Search query: catches emails from major job platforms OR job-related subjects.
-# Intentionally broad — the classifier (Part 4) filters out noise.
+# Search query: AND logic — email must match both from: AND subject: conditions.
+# This prevents noise from non-job emails that happen to use job-related words.
 _JOB_QUERY = (
-    "(from:(linkedin.com OR naukri.com OR wellfound.com OR internshala.com OR "
-    "indeed.com OR angel.co OR angellist.com OR lever.co OR greenhouse.io OR "
-    "workday.com OR myworkday.com OR smartrecruiters.com OR taleo.net OR icims.com OR "
-    "successfactors.com OR brassring.com OR bamboohr.com OR instahyre.com OR "
-    "cutshort.io OR hirist.com OR hirist.tech OR jooble.org OR jobsora.com OR nttdata.com) OR "
+    "from:(linkedin.com OR naukri.com OR wellfound.com OR internshala.com OR "
+    "indeed.com OR angel.co OR angellist.com OR instahyre.com OR cutshort.io OR "
+    "hirist.com OR greenhouse.io OR lever.co OR workday.com OR myworkday.com OR "
+    "smartrecruiters.com OR bamboohr.com OR icims.com OR taleo.net OR successfactors.com) "
     'subject:("application received" OR "application submitted" OR "you applied" OR '
-    '"we received your application" OR "thank you for applying" OR "your application" OR '
+    '"we received your application" OR "thank you for applying" OR '
     '"application successful" OR "successfully applied" OR "application complete" OR '
-    '"online submission" OR "thank you for submitting" OR '
-    '"interview invitation" OR "interview request" OR "job offer" OR "offer letter" OR '
-    '"we regret to inform" OR "unfortunately" OR "shortlisted" OR "next steps" OR '
-    '"coding challenge" OR "technical assessment" OR "we have reviewed" OR '
-    '"hiring process" OR "recruitment update"))'
+    '"thank you for submitting" OR "interview invitation" OR "interview request" OR '
+    '"job offer" OR "offer letter" OR "we regret to inform" OR "unfortunately" OR '
+    '"shortlisted" OR "next steps" OR "coding challenge" OR "technical assessment")'
 )
 
 
