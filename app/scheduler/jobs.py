@@ -133,14 +133,7 @@ async def _process_one_email(db, email: dict, loop) -> None:
     except Exception as exc:
         logger.error(f"[{email_id}] Telegram notification error: {exc}")
 
-    # ── 5. Google Sheets sync (sync → thread pool) ────────────────────────────
-    if config.SHEETS_ENABLED:
-        try:
-            from app.sheets.sync import get_sheets_sync
-            sync = get_sheets_sync()
-            await loop.run_in_executor(None, sync.sync_application, db, app)
-        except Exception as exc:
-            logger.error(f"[{email_id}] Sheets sync error: {exc}")
+    # Sheets sync happens only after user approves via Telegram (Option B)
 
 
 def _save_application(db, extracted, dup) -> Optional[Application]:

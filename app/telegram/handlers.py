@@ -281,6 +281,7 @@ async def handle_text_input(update: Update, context: ContextTypes.DEFAULT_TYPE) 
                 f"Approved with a <b>{days}-day</b> follow-up reminder.",
                 parse_mode="HTML",
             )
+            await _sync_to_sheets(db, app)
     finally:
         db.close()
 
@@ -299,6 +300,7 @@ async def _show_followup_kb(query, app_id: int) -> None:
 
 
 async def _do_approve(query, app_id: int, days: int) -> None:
+    import asyncio
     db = SessionLocal()
     try:
         app = db.query(JobApp).filter(JobApp.id == app_id).first()
@@ -311,6 +313,7 @@ async def _do_approve(query, app_id: int, days: int) -> None:
             format_card(app) + f"\n\n✅ <b>Approved</b> — follow-up reminder set for {followup_str}",
             parse_mode="HTML",
         )
+        await _sync_to_sheets(db, app)
     finally:
         db.close()
 
@@ -434,6 +437,21 @@ def format_card(app: JobApp) -> str:
         f"📅 <b>Date:</b>      {app.email_date.strftime('%d/%m/%Y')}",
     ]
     return "\n".join(lines)
+
+
+async def _sync_to_sheets(db, app: JobApp) -> None:
+    """Syncs an approved application to Google Sheets in a background thread."""
+    from app.config import config
+    if not config.SHEETS_ENABLED:
+        return
+    try:
+        import asyncio
+        from app.sheets.sync import get_sheets_sync
+        sync = get_sheets_sync()
+        await asyncio.get_event_loop().run_in_executor(None, sync.sync_application, db, app)
+        logger.info(f"Application {app.id} synced to sheet after approval")
+    except Exception as exc:
+        logger.error(f"Sheets sync after approval failed for id={app.id}: {exc}")
 
 
 def _apply_approval(db, app: JobApp, days: int) -> None:
