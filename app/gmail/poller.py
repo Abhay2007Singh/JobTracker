@@ -21,19 +21,14 @@ logger = setup_logger(__name__)
 # Stored next to run.py in the project root.
 STATE_FILE = Path("jobtracker_state.json")
 
-# Search query: AND logic — email must match both from: AND subject: conditions.
-# This prevents noise from non-job emails that happen to use job-related words.
+# Gmail fetches all emails from known job platform domains.
+# Subject/noise filtering is handled by the rule-based classifier after fetch.
 _JOB_QUERY = (
     "from:(linkedin.com OR naukri.com OR wellfound.com OR internshala.com OR "
     "indeed.com OR angel.co OR angellist.com OR instahyre.com OR cutshort.io OR "
-    "hirist.com OR greenhouse.io OR lever.co OR workday.com OR myworkday.com OR "
-    "smartrecruiters.com OR bamboohr.com OR icims.com OR taleo.net OR successfactors.com) "
-    'subject:("application received" OR "application submitted" OR "you applied" OR '
-    '"we received your application" OR "thank you for applying" OR '
-    '"application successful" OR "successfully applied" OR "application complete" OR '
-    '"thank you for submitting" OR "interview invitation" OR "interview request" OR '
-    '"job offer" OR "offer letter" OR "we regret to inform" OR "unfortunately" OR '
-    '"shortlisted" OR "next steps" OR "coding challenge" OR "technical assessment")'
+    "hirist.com OR hirist.tech OR greenhouse.io OR lever.co OR workday.com OR "
+    "myworkday.com OR smartrecruiters.com OR bamboohr.com OR icims.com OR "
+    "taleo.net OR successfactors.com OR nttdata.com OR jooble.org OR jobsora.com)"
 )
 
 
